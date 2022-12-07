@@ -78,3 +78,12 @@ def limpieza_comun(df):
 
     return df
 
+
+df = pd.read_csv("../datasets/test.csv")
+df = df.head(10)
+
+print(df.values)
+
+'''print(df)
+print(df.dtype)
+print(type(df))'''

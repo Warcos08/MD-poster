@@ -2,15 +2,16 @@ import pickle
 import pandas as pd
 from lightgbm import LGBMClassifier
 
+import warnings
+warnings.filterwarnings('ignore')
+
 
 def trainLightGBM(df):
     # Separo las labels del entrenamiento
     X = df.drop("Chapter", axis=1)
-    X = X[["Topicos"]]
     y = df["Chapter"]
 
     print(X.head(5))
-    print(y.head(5))
 
     lgbm = LGBMClassifier(random_state=42)
     # Definir mas hiperparámetros (

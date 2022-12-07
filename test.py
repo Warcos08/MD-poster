@@ -4,14 +4,20 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score
 import scikitplot.metrics as skplt
 import matplotlib.pyplot as plt
 
+import warnings
+warnings.filterwarnings('ignore')
+
 def testLightGBM(df):
     file = open("modelos/lightGBM.sav", "rb")
     lgbm = pickle.load(file)
     file.close()
 
     # Elimino la label del conjunto de test
-    X_test = df.drop("Chapter", axis=1)
+    X_test1 = df["Topicos"]
+    X_test = pd.DataFrame(df["Topicos"].to_list())
     y_test = df["Chapter"]
+
+    print(X_test.head(5))
 
     # Realizo el test
     y_pred = lgbm.predict(X_test)
@@ -34,7 +40,7 @@ def testLightGBM(df):
     skplt.plot_confusion_matrix(y_test, y_pred)
     plt.xlabel("True label")
     plt.ylabel("Predicted label")
-    plt.savefig('Imagenes/matrizLightGBM.png')
+    plt.savefig('imagenes/matrizLightGBM.png')
     plt.show()
 
 

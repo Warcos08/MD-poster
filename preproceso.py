@@ -20,6 +20,10 @@ STOPWORDS = set(stopwords.words("english"))
 wnl = WordNetLemmatizer()
 stemmer = SnowballStemmer("english")
 
+import warnings
+warnings.filterwarnings('ignore')
+
+
 def limpiar_texto(texto):
     # Eliminamos los caracteres especiales
     texto = re.sub(r'\W', ' ', str(texto))
@@ -173,21 +177,22 @@ def bowTrain(df):
     corpus = [diccionario.doc2bow(review) for review in df.Tokens]
 
     # BOW de una review
-    print(corpus[5])
-    print(len(corpus), len(corpus[0]), len(corpus[1]))
-    print(len(df))
+    print(corpus[0])
+    print(len(corpus), len(df.shape))
+    # print(len(corpus), len(corpus[0]), len(corpus[1]))
+    # print(len(df))
 
     # Tengo que devolverlo como un dataframe
-    documents = df["open_response"]
+    '''documents = df["open_response"]
     instancias = []
     for i in range(len(documents)):
         instancias.append(topicosReview(corpus, i))
-    df["Instancias"] = instancias
+    df["Topicos"] = instancias
 
     df["newid"] = dfOld["newid"]    #guardamos los ids
     df["Chapter"] = dfOld["gs_text34"].apply(diseaseToChapter)  #guardamos los chapters
 
-    print(df.keys())
+    print(df.keys())'''
 
     return df
 
@@ -236,11 +241,18 @@ def topicosTrain(df, num_Topics):
 
     df["newid"] = dfOld["newid"]    #guardamos los ids
     df["Chapter"] = dfOld["gs_text34"].apply(diseaseToChapter)  #guardamos los chapters
+    #df["Chapter"] = dfOld["Chapter"]
 
-    '''for i in lda.print_topics(-1):
-        print(i)'''
+    X1 = df["Topicos"]
+    X = pd.DataFrame(df["Topicos"].to_list())
+    y = df["Chapter"]
+    df2 = pd.concat([X, y], axis=1, join="inner")
 
-    return df
+    print(df2.head(5))
+    print(df2.shape)
+    print(df2.columns)
+
+    return df2
 
 
 def bowTest(df):

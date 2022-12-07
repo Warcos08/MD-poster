@@ -6,6 +6,8 @@ import pickle
 import preproceso, train
 import test
 
+import warnings
+warnings.filterwarnings('ignore')
 
 def entrenamiento():
     dfTrain = pd.read_csv("datasets/data.csv")
@@ -27,7 +29,8 @@ def entrenamiento():
 
     elif eleccion == 2:
         print("Ha elegido Topic Modeling")
-        num_topics = int(input("Introduzca el numero de topicos deseado (óptimo --> 26): \n"))
+        #num_topics = int(input("Introduzca el numero de topicos deseado (óptimo --> 26): \n"))
+        num_topics = 26
         dfTrain = preproceso.topicosTrain(dfTrain, num_topics)
 
     elif eleccion == 3:
@@ -39,8 +42,6 @@ def entrenamiento():
         entrenamiento()
 
 
-    print(dfTrain["Topicos"].head(5))
-    print(dfTrain.columns)
 
     eleccion = int(input('''Elija el modelo a utilizar:
                                 (1) LDA
