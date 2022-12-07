@@ -1,5 +1,6 @@
 import re
 import pickle
+import gensim
 import nltk
 from nltk import WordNetLemmatizer
 from nltk.corpus import stopwords
@@ -150,28 +151,6 @@ def diseaseToChapter(disease):
     return dictDC[disease]
 
 
-def topicosTest(df):
-    diccionario = gensim.corpora.Dictionary.load("modelos/diccLDA")
-    dfOld = df
-    df = limpieza_comun(df)
-
-    diccionario.filter_extremes(no_below=0.1, no_above = 0.7)
-    cuerpo = [diccionario.doc2bow(review) for review in df.Tokens]
-
-    documents = df["open_response"]
-    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words="english")
-    tf_vectorizer.fit_transform(documents.values.astype(str))
-
-    topicos = []
-    for i in range(len(documents)):
-        topicos.append(topicosReview(cuerpo, i))
-
-    df["Topicos"] = topicos
-    df["newid"] = dfOld["newid"]  # guardamos los ids
-
-    return df
-
-
 def bowTrain(df):
     # ---> Parte 1: https://elmundodelosdatos.com/topic-modeling-gensim-fundamentos-preprocesamiento-textos/
     #ruta = str(input("Introduce el path relativo (EJ: ./datasets/nombre.csv) :"))
@@ -250,6 +229,100 @@ def topicosTrain(df, num_Topics):
     file = open("./modelos/lda.sav", "wb")
     pickle.dump(lda, file)
     file.close()
+    topicos = []
+    for i in range(len(documents)):
+        topicos.append(topicosReview(cuerpo, i))
+    df["Topicos"] = topicos
+
+    df["newid"] = dfOld["newid"]    #guardamos los ids
+    df["Chapter"] = dfOld["gs_text34"].apply(diseaseToChapter)  #guardamos los chapters
+
+    '''for i in lda.print_topics(-1):
+        print(i)'''
+
+    return df
+
+
+def bowTest(df):
+    # ---> Parte 1: https://elmundodelosdatos.com/topic-modeling-gensim-fundamentos-preprocesamiento-textos/
+    #ruta = str(input("Introduce el path relativo (EJ: ./datasets/nombre.csv) :"))
+    dfOld = df      #guardamos aqui las columnas que no modificamos pero si necesitamos posteriormente
+    df = limpieza_comun(df)
+
+    # ---> Parte 2: https://elmundodelosdatos.com/topic-modeling-gensim-asignacion-topicos/
+    # Cargamos en el diccionario la lista de palabras que tenemos de las reviews
+    diccionario = gensim.corpora.Dictionary.load("modelos/diccBOW")
+    #print(f'Número de tokens: {len(diccionario)}') #mostrar el numero se palabras
+
+    # Creamos el corpus (por cada token en el df) QUE ES UN ARRAY BOW
+    corpus = [diccionario.doc2bow(review) for review in df.Tokens]
+
+    # BOW de una review
+    print(corpus[5])
+    print(len(corpus), len(corpus[0]), len(corpus[1]))
+    print(len(df))
+
+    # Tengo que devolverlo como un dataframe
+    documents = df["open_response"]
+    instancias = []
+    for i in range(len(documents)):
+        instancias.append(topicosReview(corpus, i))
+    df["Instancias"] = instancias
+
+    df["newid"] = dfOld["newid"]    #guardamos los ids
+    df["Chapter"] = dfOld["gs_text34"].apply(diseaseToChapter)  #guardamos los chapters
+
+    print(df.keys())
+
+    return df
+
+
+def topicosTest(df):
+    '''diccionario = gensim.corpora.Dictionary.load("modelos/diccLDA")
+    dfOld = df
+    df = limpieza_comun(df)
+
+    diccionario.filter_extremes(no_below=0.1, no_above = 0.7)
+    cuerpo = [diccionario.doc2bow(review) for review in df.Tokens]
+
+    documents = df["open_response"]
+    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words="english")
+    tf_vectorizer.fit_transform(documents.values.astype(str))
+
+    topicos = []
+    for i in range(len(documents)):
+        topicos.append(topicosReview(cuerpo, i))
+
+    df["Topicos"] = topicos
+    df["newid"] = dfOld["newid"]  # guardamos los ids
+
+    return df'''
+
+    # ---> Parte 1: https://elmundodelosdatos.com/topic-modeling-gensim-fundamentos-preprocesamiento-textos/
+    #ruta = str(input("Introduce el path relativo (EJ: ./datasets/nombre.csv) :"))
+    dfOld = df      #guardamos aqui las columnas que no modificamos pero si necesitamos posteriormente
+    df = limpieza_comun(df)
+
+    # ---> Parte 2: https://elmundodelosdatos.com/topic-modeling-gensim-asignacion-topicos/
+    # Cargamos en el diccionario la lista de palabras que tenemos de las reviews
+    diccionario = gensim.corpora.Dictionary.load("modelos/diccLDA")
+    #print(f'Número de tokens: {len(diccionario)}') #mostrar el numero se palabras
+
+    # Creamos el corpus (por cada token en el df) QUE ES UN ARRAY BOW
+    cuerpo = [diccionario.doc2bow(review) for review in df.Tokens]
+
+    # BOW de una review
+    # print(corpus[5])
+
+    documents = df["open_response"]
+    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words="english")
+    tf_vectorizer.fit_transform(documents.values.astype(str))
+
+    # Cargo el modelo
+    file = open("modelos/lda.sav", "rb")
+    lda = pickle.load(file)
+    file.close()
+
     topicos = []
     for i in range(len(documents)):
         topicos.append(topicosReview(cuerpo, i))
