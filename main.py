@@ -1,3 +1,4 @@
+import csv
 import sys
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -25,14 +26,16 @@ def entrenamiento():
     # Aplico el preproceso al train
     if eleccion == 1:
         print("Ha elegido BOW")
-        dfTrain = preproceso.bowTrain(dfTrain)
-
+        #dfTrain = preproceso.bowTrain(dfTrain)
+        dfTrain = pd.read_csv("datasets/bow/trainBOW.csv")
 
     elif eleccion == 2:
         print("Ha elegido Topic Modeling")
         #num_topics = int(input("Introduzca el numero de topicos deseado (óptimo --> 26): \n"))
         num_topics = 26
-        dfTrain = preproceso.topicosTrain(dfTrain, num_topics)
+        #dfTrain = preproceso.topicosTrain(dfTrain, num_topics)
+        dfTrain = pd.read_csv("datasets/lda/trainLDA.csv")
+
 
     elif eleccion == 3:
         print("Saliendo . . .")
@@ -45,15 +48,15 @@ def entrenamiento():
 
 
     eleccion = int(input('''Elija el modelo a utilizar:
-                                (1) LDA
+                                (1) SVM
                                 (2) LightGBM
                                 (3) Salir\n'''))
 
 
     # Entreno el modelo elegido
     if eleccion == 1:
-        print("Ha elegido LDA")
-        #train.trainLDA(dfTrain)
+        print("Ha elegido SVM")
+        train.trainSVM(dfTrain)
 
     elif eleccion == 2:
         print("Ha elegido LightGBM")
@@ -82,11 +85,15 @@ def testeo():
     # Aplico el preproceso al train
     if eleccion == 1:
         print("Ha elegido BOW")
-        dfTest = preproceso.bowTest(dfTest)
+        #dfTest = preproceso.bowTest(dfTest)
+        dfTest = pd.read_csv("datasets/bow/testBOW.csv")
+
 
     elif eleccion == 2:
         print("Ha elegido Topic Modeling")
-        dfTest = preproceso.topicosTest(dfTest)
+        #dfTest = preproceso.topicosTest(dfTest)
+        dfTest = pd.read_csv("datasets/lda/testLDA.csv")
+
 
     elif eleccion == 3:
         print("Saliendo . . .")
@@ -96,18 +103,15 @@ def testeo():
         print("Seleccion incorrecta")
         testeo()
 
-    print(dfTest.head(5))
-    print(dfTest.columns)
-
     eleccion = int(input('''Elija el modelo a testear:
-                                    (1) LDA
+                                    (1) SVM
                                     (2) LightGBM
                                     (3) Salir\n'''))
 
     # Entreno el modelo elegido
     if eleccion == 1:
-        print("Ha elegido LDA")
-        test.testLDA(dfTest)
+        print("Ha elegido SVM")
+        test.testSVM(dfTest)
 
     elif eleccion == 2:
         print("Ha elegido LightGBM")

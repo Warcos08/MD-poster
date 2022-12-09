@@ -164,6 +164,7 @@ def bowTrain(df):
     # ---> Parte 2: https://elmundodelosdatos.com/topic-modeling-gensim-asignacion-topicos/
     # Cargamos en el diccionario la lista de palabras que tenemos de las reviews
     diccionario = Dictionary(df.Tokens)
+    print(diccionario)
     #print(f'Número de tokens: {len(diccionario)}') #mostrar el numero se palabras
 
     # Reducimos el diccionario filtrando las palabras mas raras o demasiado frecuentes
@@ -177,7 +178,7 @@ def bowTrain(df):
     corpus = [diccionario.doc2bow(review) for review in df.Tokens]
 
     # BOW de una review
-    print(len(corpus), len(df.shape))
+    # print(len(corpus), len(df.shape))
     # print(len(corpus), len(corpus[0]), len(corpus[1]))
     # print(len(df))
 
@@ -205,11 +206,13 @@ def bowTrain(df):
                 bow.append(0)
                 cont+=1
             bow.append(word_count)
+            cont+=1
         df1.loc[len(df1.index)] = [bow]
 
 
     # Vuelvo a añadir las labels
     df1["Chapter"] = dfOld["gs_text34"].apply(diseaseToChapter)  #guardamos los chapters
+    df1 = df1.drop(df1[df1.Chapter == 8].index)
 
     X1 = df1["Topicos"]
     X = pd.DataFrame(df1["Topicos"].to_list())
@@ -218,6 +221,9 @@ def bowTrain(df):
 
     # Elimino los nulls
     df2 = df2.fillna(0)
+
+    # Guardo el dataset
+    df2.to_csv("datasets/bow/trainBOW.csv")
 
     return df2
 
@@ -266,16 +272,17 @@ def topicosTrain(df, num_Topics):
 
     df["newid"] = dfOld["newid"]    #guardamos los ids
     df["Chapter"] = dfOld["gs_text34"].apply(diseaseToChapter)  #guardamos los chapters
-    #df["Chapter"] = dfOld["Chapter"]
+    df = df.drop(df[df.Chapter == 8].index)
 
-    X1 = df["Topicos"]
     X = pd.DataFrame(df["Topicos"].to_list())
     y = df["Chapter"]
     df2 = pd.concat([X, y], axis=1, join="inner")
 
     print(df2.head(5))
-    print(df2.shape)
-    print(df2.columns)
+    print(df2.Chapter.unique())
+
+    # Guardo el dataset
+    df2.to_csv("datasets/lda/trainLDA.csv")
 
     return df2
 
@@ -323,6 +330,10 @@ def bowTest(df):
                 bow.append(0)
                 cont += 1
             bow.append(word_count)
+            cont+=1
+        while cont < len(diccionario):
+            bow.append((0))
+            cont+=1
         df1.loc[len(df1.index)] = [bow]
 
     # Vuelvo a añadir las labels
@@ -336,32 +347,13 @@ def bowTest(df):
     # Elimino los nulls
     df2 = df2.fillna(0)
 
-    return df2
+    # Guardo el dataset
+    df2.to_csv("datasets/bow/testBOW.csv")
 
-    return df
+    return df2
 
 
 def topicosTest(df):
-    '''diccionario = gensim.corpora.Dictionary.load("modelos/diccLDA")
-    dfOld = df
-    df = limpieza_comun(df)
-
-    diccionario.filter_extremes(no_below=0.1, no_above = 0.7)
-    cuerpo = [diccionario.doc2bow(review) for review in df.Tokens]
-
-    documents = df["open_response"]
-    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words="english")
-    tf_vectorizer.fit_transform(documents.values.astype(str))
-
-    topicos = []
-    for i in range(len(documents)):
-        topicos.append(topicosReview(cuerpo, i))
-
-    df["Topicos"] = topicos
-    df["newid"] = dfOld["newid"]  # guardamos los ids
-
-    return df'''
-
     # ---> Parte 1: https://elmundodelosdatos.com/topic-modeling-gensim-fundamentos-preprocesamiento-textos/
     #ruta = str(input("Introduce el path relativo (EJ: ./datasets/nombre.csv) :"))
     dfOld = df      #guardamos aqui las columnas que no modificamos pero si necesitamos posteriormente
@@ -382,11 +374,6 @@ def topicosTest(df):
     tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words="english")
     tf_vectorizer.fit_transform(documents.values.astype(str))
 
-    # Cargo el modelo
-    file = open("modelos/lda.sav", "rb")
-    lda = pickle.load(file)
-    file.close()
-
     topicos = []
     for i in range(len(documents)):
         topicos.append(topicosReview(cuerpo, i))
@@ -398,7 +385,6 @@ def topicosTest(df):
     '''for i in lda.print_topics(-1):
         print(i)'''
 
-    X1 = df["Topicos"]
     X = pd.DataFrame(df["Topicos"].to_list())
     y = df["Chapter"]
     df2 = pd.concat([X, y], axis=1, join="inner")
@@ -406,5 +392,8 @@ def topicosTest(df):
     '''print(df2.head(5))
     print(df2.shape)
     print(df2.columns)'''
+
+    # Guardo el dataset
+    df2.to_csv("datasets/lda/testLDA.csv")
 
     return df2
