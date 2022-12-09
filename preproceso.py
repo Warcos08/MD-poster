@@ -223,7 +223,7 @@ def bowTrain(df):
     df2 = df2.fillna(0)
 
     # Guardo el dataset
-    df2.to_csv("datasets/bow/trainBOW.csv")
+    df2.to_csv("datasets/bow/trainBOW.csv", index=False)
 
     return df2
 
@@ -282,7 +282,7 @@ def topicosTrain(df, num_Topics):
     print(df2.Chapter.unique())
 
     # Guardo el dataset
-    df2.to_csv("datasets/lda/trainLDA.csv")
+    df2.to_csv("datasets/lda/trainLDA.csv", index=False)
 
     return df2
 
@@ -348,7 +348,7 @@ def bowTest(df):
     df2 = df2.fillna(0)
 
     # Guardo el dataset
-    df2.to_csv("datasets/bow/testBOW.csv")
+    df2.to_csv("datasets/bow/testBOW.csv", index=False)
 
     return df2
 
@@ -394,6 +394,6 @@ def topicosTest(df):
     print(df2.columns)'''
 
     # Guardo el dataset
-    df2.to_csv("datasets/lda/testLDA.csv")
+    df2.to_csv("datasets/lda/testLDA.csv", index=False)
 
     return df2
