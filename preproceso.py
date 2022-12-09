@@ -177,7 +177,6 @@ def bowTrain(df):
     corpus = [diccionario.doc2bow(review) for review in df.Tokens]
 
     # BOW de una review
-    print(corpus[0])
     print(len(corpus), len(df.shape))
     # print(len(corpus), len(corpus[0]), len(corpus[1]))
     # print(len(df))
@@ -194,7 +193,33 @@ def bowTrain(df):
 
     print(df.keys())'''
 
-    return df
+    # Transformo el ouput en un dataframe
+    df1 = pd.DataFrame(columns=["Topicos"])
+    for instancia in corpus:
+        cont = 0
+        bow = []
+        for word in instancia:
+            word_id = word[0]
+            word_count = word[1]
+            while cont < word_id:
+                bow.append(0)
+                cont+=1
+            bow.append(word_count)
+        df1.loc[len(df1.index)] = [bow]
+
+
+    # Vuelvo a añadir las labels
+    df1["Chapter"] = dfOld["gs_text34"].apply(diseaseToChapter)  #guardamos los chapters
+
+    X1 = df1["Topicos"]
+    X = pd.DataFrame(df1["Topicos"].to_list())
+    y = df1["Chapter"]
+    df2 = pd.concat([X, y], axis=1, join="inner")
+
+    # Elimino los nulls
+    df2 = df2.fillna(0)
+
+    return df2
 
 
 def topicosTrain(df, num_Topics):
@@ -270,12 +295,12 @@ def bowTest(df):
     corpus = [diccionario.doc2bow(review) for review in df.Tokens]
 
     # BOW de una review
-    print(corpus[5])
+    '''print(corpus[5])
     print(len(corpus), len(corpus[0]), len(corpus[1]))
-    print(len(df))
+    print(len(df))'''
 
     # Tengo que devolverlo como un dataframe
-    documents = df["open_response"]
+    '''documents = df["open_response"]
     instancias = []
     for i in range(len(documents)):
         instancias.append(topicosReview(corpus, i))
@@ -284,7 +309,34 @@ def bowTest(df):
     df["newid"] = dfOld["newid"]    #guardamos los ids
     df["Chapter"] = dfOld["gs_text34"].apply(diseaseToChapter)  #guardamos los chapters
 
-    print(df.keys())
+    print(df.keys())'''
+
+    # Transformo el ouput en un dataframe
+    df1 = pd.DataFrame(columns=["Topicos"])
+    for instancia in corpus:
+        cont = 0
+        bow = []
+        for word in instancia:
+            word_id = word[0]
+            word_count = word[1]
+            while cont < word_id:
+                bow.append(0)
+                cont += 1
+            bow.append(word_count)
+        df1.loc[len(df1.index)] = [bow]
+
+    # Vuelvo a añadir las labels
+    df1["Chapter"] = dfOld["gs_text34"].apply(diseaseToChapter)  # guardamos los chapters
+
+    X1 = df1["Topicos"]
+    X = pd.DataFrame(df1["Topicos"].to_list())
+    y = df1["Chapter"]
+    df2 = pd.concat([X, y], axis=1, join="inner")
+
+    # Elimino los nulls
+    df2 = df2.fillna(0)
+
+    return df2
 
     return df
 
@@ -346,4 +398,13 @@ def topicosTest(df):
     '''for i in lda.print_topics(-1):
         print(i)'''
 
-    return df
+    X1 = df["Topicos"]
+    X = pd.DataFrame(df["Topicos"].to_list())
+    y = df["Chapter"]
+    df2 = pd.concat([X, y], axis=1, join="inner")
+
+    '''print(df2.head(5))
+    print(df2.shape)
+    print(df2.columns)'''
+
+    return df2

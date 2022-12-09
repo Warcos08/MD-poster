@@ -8,16 +8,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 def testLightGBM(df):
+    # Cargo el modelo entrenado
     file = open("modelos/lightGBM.sav", "rb")
     lgbm = pickle.load(file)
     file.close()
 
-    # Elimino la label del conjunto de test
-    X_test1 = df["Topicos"]
-    X_test = pd.DataFrame(df["Topicos"].to_list())
+    # Separo las instancias de su label
+    X_test = df.drop("Chapter", axis=1)
     y_test = df["Chapter"]
-
-    print(X_test.head(5))
 
     # Realizo el test
     y_pred = lgbm.predict(X_test)

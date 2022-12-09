@@ -27,6 +27,7 @@ def entrenamiento():
         print("Ha elegido BOW")
         dfTrain = preproceso.bowTrain(dfTrain)
 
+
     elif eleccion == 2:
         print("Ha elegido Topic Modeling")
         #num_topics = int(input("Introduzca el numero de topicos deseado (óptimo --> 26): \n"))
@@ -94,6 +95,9 @@ def testeo():
     else:
         print("Seleccion incorrecta")
         testeo()
+
+    print(dfTest.head(5))
+    print(dfTest.columns)
 
     eleccion = int(input('''Elija el modelo a testear:
                                     (1) LDA
