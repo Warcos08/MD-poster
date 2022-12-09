@@ -47,7 +47,7 @@ def entrenamiento():
 
 
 
-    eleccion = int(input('''Elija el modelo a utilizar:
+    eleccion = int(input('''Elija el modelo a entrenar:
                                 (1) SVM
                                 (2) LightGBM
                                 (3) Salir\n'''))
@@ -128,7 +128,7 @@ def testeo():
 
 
 def main():
-    print('''BIENVENIDO AL AGRUPADOR DE DOCUMENTOS MÉDICOS
+    print('''\n\nBIENVENIDO AL AGRUPADOR DE DOCUMENTOS MÉDICOS
     
         Pulse el número según lo que que desee ejecutar:
             (1) Entrenar el modelo 

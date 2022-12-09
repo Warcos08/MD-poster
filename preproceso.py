@@ -306,7 +306,6 @@ def bowTest(df):
     print(len(corpus), len(corpus[0]), len(corpus[1]))
     print(len(df))'''
 
-    # Tengo que devolverlo como un dataframe
     '''documents = df["open_response"]
     instancias = []
     for i in range(len(documents)):
